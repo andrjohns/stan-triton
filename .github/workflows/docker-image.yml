@@ -24,7 +24,7 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v3
       with:
-        context: .
+        file: stan_triton.Dockerfile
         push: true
         tags: "andrjohns/stan-triton:2.30.1"
         cache-from: type=gha
