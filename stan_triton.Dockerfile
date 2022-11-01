@@ -1,16 +1,10 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 # Defined only while building
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Add non-free repo to install Intel MKL
 RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list
-
-RUN apt-get update && apt-get install gnupg -y
-
-# Add CRAN Debian repo and public key so we can install R4.2+
-RUN echo "deb http://cloud.r-project.org/bin/linux/debian bullseye-cran40/" >> /etc/apt/sources.list
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key '95C0FAF38DB3CCAD0C080A7BDC78B2DDEABC47B7'
 
 RUN apt-get update && apt-get install intel-mkl-full r-base-dev nvidia-opencl-icd \
                                       sudo libcurl4-openssl-dev libv8-dev git \
@@ -25,22 +19,15 @@ RUN update-alternatives --install /usr/lib/x86_64-linux-gnu/liblapack.so.3 \
                                   liblapack.so.3-x86_64-linux-gnu \
                                   /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150
 
-RUN echo " \
-  MKL_INTERFACE_LAYER=GNU,LP64 \n \
-  MKL_THREADING_LAYER=GNU \n \
-  HOME=/home/stan_triton \n \
-  R_LIBS_USER=/home/stan_triton/R/library \n \
-  R_MAKEVARS_USER=/home/stan_triton/.R/MAKEVARS \n \
-  CMDSTAN=/home/stan_triton/.cmdstan/cmdstan-2.30.1 \n \
-" >> /etc/profile
-
 RUN adduser --disabled-password --gecos '' stan_triton
 RUN adduser stan_triton sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-ARG R_LIBS_USER=/home/stan_triton/R/library
-ARG MKL_INTERFACE_LAYER=GNU,LP64
-ARG MKL_THREADING_LAYER=GNU
+ENV MKL_INTERFACE_LAYER GNU,LP64
+ENV MKL_THREADING_LAYER GNU
+ENV R_LIBS_USER /home/stan_triton/R/library
+ENV R_MAKEVARS_USER /home/stan_triton/.R/MAKEVARS
+ENV CMDSTAN /home/stan_triton/.cmdstan/cmdstan-2.30.1
 
 USER stan_triton
 WORKDIR /home/stan_triton
