@@ -3,9 +3,8 @@ FROM debian:bookworm-slim
 # Defined only while building
 ARG DEBIAN_FRONTEND=noninteractive
 
-ENV LC_ALL en_US.UTF-8
-ENV TZ Etc/UTC
-ENV LANG en_US.UTF-8
+RUN update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+RUN source /etc/default/locale
 
 # Add non-free repo to install Intel MKL
 RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list
