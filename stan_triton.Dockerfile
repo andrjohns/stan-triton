@@ -9,7 +9,7 @@ RUN bash source /etc/default/locale
 # Add non-free repo to install Intel MKL
 RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list
 
-RUN apt-get update && apt-get install intel-mkl-full r-base-dev nvidia-opencl-icd \
+RUN apt-get update && apt-get install locales locales-all intel-mkl-full r-base-dev nvidia-opencl-icd \
                                       sudo libcurl4-openssl-dev libv8-dev git \
                                       libxml2-dev clinfo nvidia-cuda-toolkit -y
                                       
