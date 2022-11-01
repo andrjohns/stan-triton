@@ -43,7 +43,7 @@ RUN mkdir -p R/library
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
-  install.packages("multiverse"); \
+  install.packages('multiverse'); \
   remotes::install_github('stan-dev/cmdstanr', dependencies = TRUE) \
 "
 
