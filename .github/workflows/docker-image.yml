@@ -3,12 +3,14 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main" ]
-    paths-ignore:
-      - '**.md'
+    paths:
+      - '**.Dockerfile'
+      - '**.yml'
   pull_request:
     branches: [ "main" ]
     paths-ignore:
-      - '**.md'
+      - '**.Dockerfile'
+      - '**.yml'
 
 jobs:
   build-and-push-image:
