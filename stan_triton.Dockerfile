@@ -28,6 +28,7 @@ ENV MKL_THREADING_LAYER GNU
 ENV R_LIBS_USER /home/stan_triton/R/library
 ENV R_MAKEVARS_USER /home/stan_triton/.R/Makevars
 ENV CMDSTAN /home/stan_triton/.cmdstan/cmdstan-2.30.1
+ENV CRAN=https://packagemanager.rstudio.com/cran/__linux__/jammy/latest
 
 USER stan_triton
 WORKDIR /home/stan_triton
@@ -36,9 +37,9 @@ WORKDIR /home/stan_triton
 # the Intel MKL and TBB libraries
 RUN mkdir .R
 RUN echo " \
-  CXXFLAGS += -O3 -march=native -mtune=native -DMKL_ILP64 -m64 \
+  CXXFLAGS += -O3 -DMKL_ILP64 -m64 \
               -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \n \
-  CXX14FLAGS += -O3 -march=native -mtune=native -DMKL_ILP64 -m64 \
+  CXX14FLAGS += -O3 -DMKL_ILP64 -m64 \
               -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \n \
   LDFLAGS += -L/usr/lib/x86_64-linux-gnu/intel64 -Wl,--no-as-needed -lmkl_intel_ilp64 \
               -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl \
@@ -63,7 +64,7 @@ RUN echo " \
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
-  install.packages('remotes', repos = 'https://cloud.r-project.org'); \
+  install.packages('remotes'); \
   remotes::install_github('stan-dev/cmdstanr', dependencies = TRUE) \
 "
 
@@ -94,7 +95,11 @@ RUN Rscript -e " \
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
-  install.packages('shiny', repos = 'https://cloud.r-project.org'); \
-  install.packages(c('tidyverse','brms','furrr', 'multiverse'), \
-                   repos = 'https://cloud.r-project.org') \
+  install.packages('shiny'); \
+  install.packages(c('tidyverse','brms','furrr', 'multiverse')) \
 "
+
+RUN echo " \
+  CXXFLAGS += -march=native -mtune=native \n \
+  CXX14FLAGS += -march=native -mtune=native \
+" >> .R/Makevars
