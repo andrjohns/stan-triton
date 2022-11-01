@@ -27,11 +27,11 @@ RUN update-alternatives --install /usr/lib/x86_64-linux-gnu/liblapack.so.3 \
 
 RUN echo " \
   MKL_INTERFACE_LAYER=GNU,LP64 \n \
-  MKL_THREADING_LAYER=GNU \
-  HOME=/home/stan_triton \
-  R_LIBS_USER=/home/stan_triton/R/library \
-  R_MAKEVARS_USER=/home/stan_triton/.R/MAKEVARS \
-  CMDSTAN=/home/stan_triton/.cmdstan/cmdstan-2.30.1 \
+  MKL_THREADING_LAYER=GNU \n \
+  HOME=/home/stan_triton \n \
+  R_LIBS_USER=/home/stan_triton/R/library \n \
+  R_MAKEVARS_USER=/home/stan_triton/.R/MAKEVARS \n \
+  CMDSTAN=/home/stan_triton/.cmdstan/cmdstan-2.30.1 \n \
 " >> /etc/profile
 
 RUN adduser --disabled-password --gecos '' stan_triton
