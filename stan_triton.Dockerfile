@@ -30,6 +30,8 @@ RUN echo " \
   MKL_THREADING_LAYER=GNU \
   HOME=/home/stan_triton \
   R_LIBS_USER=/home/stan_triton/R/library \
+  R_MAKEVARS_USER=/home/stan_triton/.R/MAKEVARS \
+  CMDSTAN=/home/stan_triton/.cmdstan/cmdstan-2.30.1 \
 " >> /etc/profile.d/stan_triton.sh
 
 RUN adduser --disabled-password --gecos '' stan_triton
