@@ -41,7 +41,7 @@ RUN echo " \
   CXX14FLAGS += -O3 -march=native -mtune=native -DMKL_ILP64 -m64 \
               -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \n \
   LDFLAGS += -L/usr/lib/x86_64-linux-gnu/intel64 -Wl,--no-as-needed -lmkl_intel_ilp64 \
-              -lmkl_tbb_thread -lmkl_core -lpthread -lm -ldl  -Wl,-L,'/usr/lib/x86_64-linux-gnu/' \
+              -lmkl_core -lpthread -lm -ldl  -Wl,-L,'/usr/lib/x86_64-linux-gnu/' \
               -Wl,-rpath,'/usr/lib/x86_64-linux-gnu/' -Wl,--disable-new-dtags -ltbb \
 " >> .R/Makevars
 
@@ -75,7 +75,7 @@ RUN Rscript -e " \
                   -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \
                   -DMKL_ILP64 -m64', \
     'LDFLAGS += -L/usr/lib/x86_64-linux-gnu/intel64 -Wl,--no-as-needed \
-                -lmkl_intel_ilp64 -lmkl_tbb_thread -lmkl_core -lpthread -lm -ldl', \
+                -lmkl_intel_ilp64 -lmkl_core -lpthread -lm -ldl', \
     'TBB_INC=/usr/include', \
     'TBB_LIB=/usr/lib/x86_64-linux-gnu', \
     'TBB_INTERFACE_NEW=true', \
