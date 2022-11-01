@@ -1,10 +1,21 @@
-FROM rocker/r-ver:4.2.1
+FROM debian:bullseye-slim
 
 # Defined only while building
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install intel-mkl-full clinfo sudo nvidia-cuda-toolkit -y
+# Add non-free repo to install Intel MKL
+RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list
 
+RUN apt-get update && apt-get install gnupg -y
+
+# Add CRAN Debian repo and public key so we can install R4.2+
+RUN echo "deb http://cloud.r-project.org/bin/linux/debian bullseye-cran40/" >> /etc/apt/sources.list
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key '95C0FAF38DB3CCAD0C080A7BDC78B2DDEABC47B7'
+
+RUN apt-get update && apt-get install locales locales-all intel-mkl-full r-base-dev nvidia-opencl-icd \
+                                      sudo libcurl4-openssl-dev libv8-dev git \
+                                      libxml2-dev clinfo nvidia-cuda-toolkit -y
+                                      
 # Specify that the MKL should provide the Matrix algebra libraries for the system
 RUN update-alternatives --install /usr/lib/x86_64-linux-gnu/libblas.so.3 \
                                   libblas.so.3-x86_64-linux-gnu \
