@@ -3,8 +3,7 @@ FROM rocker/r-ver:4.2.1
 # Defined only while building
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install intel-mkl-full nvidia-opencl-icd \
-                                      clinfo sudo nvidia-cuda-toolkit -y
+RUN apt-get update && apt-get install intel-mkl-full clinfo sudo nvidia-cuda-toolkit -y
 
 # Specify that the MKL should provide the Matrix algebra libraries for the system
 RUN update-alternatives --install /usr/lib/x86_64-linux-gnu/libblas.so.3 \
