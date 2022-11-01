@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install intel-mkl-full r-base-dev nvidia-opencl-ic
                                       libxml2-dev clinfo nvidia-cuda-toolkit -y
                                       
 RUN apt-get install r-cran-rcpp r-cran-rcppeigen r-cran-rstan r-cran-brms \
-                    r-cran-tidyverse r-cran-multiverse r-cran-furrr r-cran-remotes \
+                    r-cran-tidyverse r-cran-furrr r-cran-remotes \
                     r-cran-shiny -y
 
 # Specify that the MKL should provide the Matrix algebra libraries for the system
@@ -43,6 +43,7 @@ RUN mkdir -p R/library
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
+  install.packages("multiverse"); \
   remotes::install_github('stan-dev/cmdstanr', dependencies = TRUE) \
 "
 
