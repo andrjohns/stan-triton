@@ -16,8 +16,6 @@ RUN apt-get update && apt-get install intel-mkl-full r-base-dev nvidia-opencl-ic
                                       sudo libcurl4-openssl-dev libv8-dev git \
                                       libxml2-dev clinfo nvidia-cuda-toolkit -y
 
-RUN ln -s /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/libOpenCL.so
-
 # Specify that the MKL should provide the Matrix algebra libraries for the system
 RUN update-alternatives --install /usr/lib/x86_64-linux-gnu/libblas.so.3 \
                                   libblas.so.3-x86_64-linux-gnu \
