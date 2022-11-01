@@ -14,7 +14,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key '95C0FAF38DB3CCAD0C0
 
 RUN apt-get update && apt-get install intel-mkl-full r-base-dev nvidia-opencl-icd \
                                       sudo libcurl4-openssl-dev libv8-dev git \
-                                      libxml2-dev clinfo -y
+                                      libxml2-dev clinfo nvidia-cuda-toolkit -y
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/libOpenCL.so
 
