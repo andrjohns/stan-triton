@@ -45,7 +45,7 @@ RUN mkdir -p R/library
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
-  install.packages(c('multiverse','remotes','rstan','projpred','brms','devtools')) \
+  install.packages(c('multiverse','remotes','rstan','projpred','brms')) \
 "
 
 RUN Rscript -e " \
