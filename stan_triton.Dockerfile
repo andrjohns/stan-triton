@@ -41,8 +41,7 @@ RUN echo " \
   CXX14FLAGS += -O3 -march=native -mtune=native -DMKL_ILP64 -m64 \
               -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \n \
   LDFLAGS += -L/usr/lib/x86_64-linux-gnu/intel64 -Wl,--no-as-needed -lmkl_intel_ilp64 \
-              -lmkl_core -lpthread -lm -ldl  -Wl,-L,'/usr/lib/x86_64-linux-gnu/' \
-              -Wl,-rpath,'/usr/lib/x86_64-linux-gnu/' -Wl,--disable-new-dtags -ltbb \
+              -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl \
 " >> .R/Makevars
 
 # Create local library for packages and make sure R is aware we're linking to the TBB
@@ -74,8 +73,8 @@ RUN Rscript -e " \
     'CXXFLAGS += -O3 -march=native -mtune=native -DEIGEN_USE_MKL_ALL -I/usr/include/mkl \
                   -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \
                   -DMKL_ILP64 -m64', \
-    'LDFLAGS += -L/usr/lib/x86_64-linux-gnu/intel64 -Wl,--no-as-needed \
-                -lmkl_intel_ilp64 -lmkl_core -lpthread -lm -ldl', \
+    'LDFLAGS += -L/usr/lib/x86_64-linux-gnu/intel64 -Wl,--no-as-needed--no-as-needed \
+                -lmkl_intel_ilp64 -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl', \
     'TBB_INC=/usr/include', \
     'TBB_LIB=/usr/lib/x86_64-linux-gnu', \
     'TBB_INTERFACE_NEW=true', \
