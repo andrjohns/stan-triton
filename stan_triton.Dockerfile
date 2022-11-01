@@ -32,7 +32,7 @@ RUN echo " \
   R_LIBS_USER=/home/stan_triton/R/library \
   R_MAKEVARS_USER=/home/stan_triton/.R/MAKEVARS \
   CMDSTAN=/home/stan_triton/.cmdstan/cmdstan-2.30.1 \
-" >> /etc/profile.d/stan_triton.sh
+" >> /etc/profile
 
 RUN adduser --disabled-password --gecos '' stan_triton
 RUN adduser stan_triton sudo
