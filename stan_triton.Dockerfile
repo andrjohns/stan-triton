@@ -29,7 +29,10 @@ RUN echo " \
   MKL_INTERFACE_LAYER=GNU,LP64 \n \
   MKL_THREADING_LAYER=GNU \
   R_LIBS_USER=/home/stan_triton/R/library:\${R_LIBS_USER} \
+  HOME=/home/stan_triton \
 " >> /etc/profile.d/stan_triton.sh
+
+RUN source /etc/profile.d/stan_triton.sh
 
 RUN adduser --disabled-password --gecos '' stan_triton
 RUN adduser stan_triton sudo
@@ -90,10 +93,6 @@ RUN Rscript -e " \
   )); \
   cmdstanr::rebuild_cmdstan(cores = parallel::detectCores()) \
 "
-
-RUN echo " \
-  HOME=/home/stan_triton \
-" >> sudo tee -a /etc/profile.d/stan_triton.sh
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
