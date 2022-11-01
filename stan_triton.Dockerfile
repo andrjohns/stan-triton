@@ -28,15 +28,17 @@ RUN update-alternatives --install /usr/lib/x86_64-linux-gnu/liblapack.so.3 \
 RUN echo " \
   MKL_INTERFACE_LAYER=GNU,LP64 \n \
   MKL_THREADING_LAYER=GNU \
-  R_LIBS_USER=/home/stan_triton/R/library:\${R_LIBS_USER} \
   HOME=/home/stan_triton \
+  R_LIBS_USER=/home/stan_triton/R/library \
 " >> /etc/profile.d/stan_triton.sh
-
-RUN source /etc/profile.d/stan_triton.sh
 
 RUN adduser --disabled-password --gecos '' stan_triton
 RUN adduser stan_triton sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+ARG R_LIBS_USER=/home/stan_triton/R/library
+ARG MKL_INTERFACE_LAYER=GNU,LP64
+ARG MKL_THREADING_LAYER=GNU
 
 USER stan_triton
 WORKDIR /home/stan_triton
