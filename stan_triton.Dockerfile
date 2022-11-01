@@ -28,7 +28,8 @@ RUN update-alternatives --install /usr/lib/x86_64-linux-gnu/liblapack.so.3 \
 RUN echo " \
   MKL_INTERFACE_LAYER=GNU,LP64 \n \
   MKL_THREADING_LAYER=GNU \
-" >> /etc/environment
+  R_LIBS_USER=/home/stan_triton/R/library:\${R_LIBS_USER} \
+" >> /etc/profile.d/stan_triton.sh
 
 RUN adduser --disabled-password --gecos '' stan_triton
 RUN adduser stan_triton sudo
@@ -54,11 +55,6 @@ RUN echo " \
 # Local library is prepended to the R_LIBS_USER env so that we can specify external
 # libraries when calling the image
 RUN mkdir -p R/library
-RUN echo " \
-  MKL_INTERFACE_LAYER=GNU,LP64 \n \
-  MKL_THREADING_LAYER=GNU \n \
-  R_LIBS_USER=/home/stan_triton/R/library:\${R_LIBS_USER} \
-" >> .Renviron
 
 # RcppEigen won't install with MKL defined, install first and then define
 # TODO(Andrew) open RcppEigen PR to fix
@@ -94,6 +90,10 @@ RUN Rscript -e " \
   )); \
   cmdstanr::rebuild_cmdstan(cores = parallel::detectCores()) \
 "
+
+RUN echo " \
+  HOME=/home/stan_triton \
+" >> sudo tee -a /etc/profile.d/stan_triton.sh
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
