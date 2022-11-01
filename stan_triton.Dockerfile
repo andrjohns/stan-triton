@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install locales locales-all intel-mkl-full r-base-
                                       libxml2-dev clinfo nvidia-cuda-toolkit -y
                                       
 RUN apt-get install r-cran-rcpp r-cran-rcppeigen r-cran-rstan r-cran-brms \
-                    r-cran-tidyverse r-cran-furrr r-cran-shiny r-cran-formatr -y
+                    r-cran-tidyverse r-cran-furrr r-cran-shiny r-cran-formatr \
+                    r-cran-devtools r-cran-remotes -y
 
 # Specify that the MKL should provide the Matrix algebra libraries for the system
 RUN update-alternatives --install /usr/lib/x86_64-linux-gnu/libblas.so.3 \
@@ -42,13 +43,13 @@ RUN mkdir -p R/library
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
-  install.packages(c('multiverse','collections', 'berryFunctions')) \
+  install.packages('multiverse') \
 "
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
   install.packages('remotes'); \
-  remotes::install_github('stan-dev/cmdstanr', dependencies = TRUE) \
+  remotes::install_github(\"stan-dev/cmdstanr\", dependencies = TRUE) \
 "
 
 RUN Rscript -e " \
