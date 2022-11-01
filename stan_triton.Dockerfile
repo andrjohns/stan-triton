@@ -26,7 +26,7 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 ENV MKL_INTERFACE_LAYER GNU,LP64
 ENV MKL_THREADING_LAYER GNU
 ENV R_LIBS_USER /home/stan_triton/R/library
-ENV R_MAKEVARS_USER /home/stan_triton/.R/MAKEVARS
+ENV R_MAKEVARS_USER /home/stan_triton/.R/Makevars
 ENV CMDSTAN /home/stan_triton/.cmdstan/cmdstan-2.30.1
 
 USER stan_triton
