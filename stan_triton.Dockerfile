@@ -9,6 +9,10 @@ RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list
 RUN apt-get update && apt-get install intel-mkl-full r-base-dev nvidia-opencl-icd \
                                       sudo libcurl4-openssl-dev libv8-dev git \
                                       libxml2-dev clinfo nvidia-cuda-toolkit -y
+                                      
+RUN apt-get install r-cran-rcpp r-cran-rcppeigen r-cran-rstan r-cran-brms \
+                    r-cran-tidyverse r-cran-multiverse r-cran-furrr r-cran-remotes \
+                    r-cran-shiny -y
 
 # Specify that the MKL should provide the Matrix algebra libraries for the system
 RUN update-alternatives --install /usr/lib/x86_64-linux-gnu/libblas.so.3 \
@@ -28,43 +32,17 @@ ENV MKL_THREADING_LAYER GNU
 ENV R_LIBS_USER /home/stan_triton/R/library
 ENV R_MAKEVARS_USER /home/stan_triton/.R/Makevars
 ENV CMDSTAN /home/stan_triton/.cmdstan/cmdstan-2.30.1
-ENV CRAN=https://packagemanager.rstudio.com/cran/__linux__/jammy/latest
 
 USER stan_triton
 WORKDIR /home/stan_triton
-
-# Create R Makevars file with compiler optimisations and linker flags for
-# the Intel MKL and TBB libraries
-RUN mkdir .R
-RUN echo " \
-  CXXFLAGS += -O3 -DMKL_ILP64 -m64 \
-              -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \n \
-  CXX14FLAGS += -O3 -DMKL_ILP64 -m64 \
-              -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \n \
-  LDFLAGS += -L/usr/lib/x86_64-linux-gnu/intel64 -Wl,--no-as-needed -lmkl_intel_ilp64 \
-              -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl \
-" >> .R/Makevars
 
 # Create local library for packages and make sure R is aware we're linking to the TBB
 # Local library is prepended to the R_LIBS_USER env so that we can specify external
 # libraries when calling the image
 RUN mkdir -p R/library
 
-# RcppEigen won't install with MKL defined, install first and then define
-# TODO(Andrew) open RcppEigen PR to fix
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
-  install.packages('RcppEigen') \
-"
-
-RUN echo " \
-  CXXFLAGS += -DEIGEN_USE_MKL_ALL -I/usr/include/mkl \n \
-  CXX14FLAGS += -DEIGEN_USE_MKL_ALL -I/usr/include/mkl \
-" >> .R/Makevars
-
-RUN Rscript -e " \
-  Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
-  install.packages('remotes'); \
   remotes::install_github('stan-dev/cmdstanr', dependencies = TRUE) \
 "
 
@@ -93,13 +71,14 @@ RUN Rscript -e " \
                         subdir = 'rstan/rstan', ref = 'experimental') \
 "
 
-RUN Rscript -e " \
-  Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
-  install.packages('shiny'); \
-  install.packages(c('tidyverse','brms','furrr', 'multiverse')) \
-"
-
+# Create R Makevars file with compiler optimisations and linker flags for
+# the Intel MKL and TBB libraries
+RUN mkdir .R
 RUN echo " \
-  CXXFLAGS += -march=native -mtune=native \n \
-  CXX14FLAGS += -march=native -mtune=native \
+  CXXFLAGS += -O3 -march=native -mtune=native -DMKL_ILP64 -m64 -DEIGEN_USE_MKL_ALL -I/usr/include/mkl \
+              -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \n \
+  CXX14FLAGS += -O3 -march=native -mtune=native -DMKL_ILP64 -m64 -DEIGEN_USE_MKL_ALL -I/usr/include/mkl \
+              -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \n \
+  LDFLAGS += -L/usr/lib/x86_64-linux-gnu/intel64 -Wl,--no-as-needed -lmkl_intel_ilp64 \
+              -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl \
 " >> .R/Makevars
