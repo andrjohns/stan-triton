@@ -49,7 +49,7 @@ RUN echo " \
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
-  install.packages(c('remotes')) \
+  install.packages(c('remotes')); \
   remotes::install_github('stan-dev/cmdstanr', dependencies = TRUE) \
 "
 
