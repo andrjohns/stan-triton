@@ -65,7 +65,8 @@ RUN Rscript -e " \
     'TBB_LIB=/usr/lib/x86_64-linux-gnu', \
     'TBB_INTERFACE_NEW=true', \
     'STAN_THREADS=true', \
-    'STANCFLAGS=\'--O1\''\
+    'STANCFLAGS=\'--O1\'', 
+    'PRECOMPILED_HEADERS=false' \
   )); \
   cmdstanr::rebuild_cmdstan(cores = parallel::detectCores()) \
 "
