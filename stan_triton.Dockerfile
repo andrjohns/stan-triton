@@ -13,7 +13,7 @@ RUN echo "deb http://cloud.r-project.org/bin/linux/debian bullseye-cran40/" >> /
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key '95C0FAF38DB3CCAD0C080A7BDC78B2DDEABC47B7'
 
 RUN apt-get update && apt-get install locales locales-all intel-mkl-full r-base-dev nvidia-opencl-icd \
-                                      sudo libcurl4-openssl-dev libv8-dev git \
+                                      sudo libcurl4-openssl-dev libv8-dev git cmake \
                                       libxml2-dev clinfo nvidia-cuda-toolkit -y
                                       
 # Specify that the MKL should provide the Matrix algebra libraries for the system
@@ -59,7 +59,7 @@ RUN Rscript -e " \
     'CXXFLAGS += -O3 -march=native -mtune=native -DEIGEN_USE_MKL_ALL -I/usr/include/mkl \
                   -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \
                   -DMKL_ILP64 -m64', \
-    'LDFLAGS += -L/usr/lib/x86_64-linux-gnu/intel64 -Wl,--no-as-needed--no-as-needed \
+    'LDFLAGS += -L/usr/lib/x86_64-linux-gnu/intel64 -Wl,--no-as-needed \
                 -lmkl_intel_ilp64 -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl', \
     'TBB_INC=/usr/include', \
     'TBB_LIB=/usr/lib/x86_64-linux-gnu', \
