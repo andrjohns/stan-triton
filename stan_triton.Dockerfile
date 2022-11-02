@@ -91,4 +91,4 @@ RUN echo " \
               -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl \
 " >> .R/Makevars
 
-ENV CMDSTAN=/home/stan_triton/.cmdstan/cmdstan-2.30.1" >> .Renviron
+ENV CMDSTAN /home/stan_triton/.cmdstan/cmdstan-2.30.1
