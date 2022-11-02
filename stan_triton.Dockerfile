@@ -80,7 +80,7 @@ RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
   remotes::install_github('stan-dev/rstan', subdir = 'StanHeaders', \
                           ref = 'experimental'); \
-  remotes::install_github('rstan', subdir = 'rstan/rstan', \
+  remotes::install_github('stan-dev/rstan', subdir = 'rstan/rstan', \
                           ref = 'experimental') \
 "
 
