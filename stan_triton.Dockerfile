@@ -33,7 +33,7 @@ ENV MKL_INTERFACE_LAYER GNU,LP64
 ENV MKL_THREADING_LAYER GNU
 ENV R_LIBS_USER /home/stan_triton/R/library
 ENV R_MAKEVARS_USER /home/stan_triton/.R/Makevars
-ENV CMDSTAN /home/stan_triton/.cmdstan/cmdstan-2.30.1
+ENV R_ENVIRON_USER /home/stan_triton/.Rennviron
 
 USER stan_triton
 WORKDIR /home/stan_triton
@@ -90,3 +90,11 @@ RUN echo " \
   LDFLAGS += -L/usr/lib/x86_64-linux-gnu/intel64 -Wl,--no-as-needed -lmkl_intel_ilp64 \
               -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl \
 " >> .R/Makevars
+
+RUN echo "CMDSTAN=\${HOME}/.cmdstan-triton/cmdstan-2.30.1" >> .Renviron
+CMD Rscript -e " \
+  if (!dir.exists(Sys.getenv('CMDSTAN'))) { \
+    file.copy(from = '/home/stan_triton/.cmdstan/cmdstan-2.30.1', \
+              to = Sys.getenv('CMDSTAN'), recursive = TRUE) \
+  } \
+"
