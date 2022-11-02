@@ -30,3 +30,5 @@ jobs:
         file: stan_triton.Dockerfile
         push: true
         tags: "andrjohns/stan-triton:2.30.1"
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
