@@ -31,25 +31,25 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 ENV MKL_INTERFACE_LAYER GNU,LP64
 ENV MKL_THREADING_LAYER GNU
-ENV R_LIBS_USER /home/stan_triton/R/library
 ENV R_MAKEVARS_USER /home/stan_triton/.R/Makevars
-ENV R_ENVIRON_USER /home/stan_triton/.Rennviron
+ENV R_ENVIRON_USER /home/stan_triton/.Renviron
+ENV CMDSTAN /home/stan_triton/.cmdstan/cmdstan-2.30.1
 
 USER stan_triton
 WORKDIR /home/stan_triton
 
-# Create local library for packages and make sure R is aware we're linking to the TBB
+# Create local library for packages
 # Local library is prepended to the R_LIBS_USER env so that we can specify external
 # libraries when calling the image
 RUN mkdir -p R/library
 
-RUN Rscript -e " \
-  Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
-  install.packages(c('multiverse','remotes','rstan','projpred','brms')) \
-"
+RUN echo " \
+  R_LIBS_USER=/home/stan_triton/R/library:\${R_LIBS_USER} \n \
+" >> .Renviron
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
+  install.packages(c('remotes')) \
   remotes::install_github('stan-dev/cmdstanr', dependencies = TRUE) \
 "
 
@@ -73,10 +73,15 @@ RUN Rscript -e " \
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
-  remotes::install_git('https://github.com/stan-dev/rstan', \
-                        subdir = 'StanHeaders', ref = 'experimental'); \
-  remotes::install_git('https://github.com/stan-dev/rstan', \
-                        subdir = 'rstan/rstan', ref = 'experimental') \
+  install.packages(c('multiverse','remotes','rstan','projpred','brms','tidyverse')) \
+"
+
+RUN Rscript -e " \
+  Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
+  remotes::install_github('stan-dev/rstan', subdir = 'StanHeaders', \
+                          ref = 'experimental'); \
+  remotes::install_github('rstan', subdir = 'rstan/rstan', \
+                          ref = 'experimental') \
 "
 
 # Create R Makevars file with compiler optimisations and linker flags for
@@ -91,4 +96,3 @@ RUN echo " \
               -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl \
 " >> .R/Makevars
 
-ENV CMDSTAN /home/stan_triton/.cmdstan/cmdstan-2.30.1
