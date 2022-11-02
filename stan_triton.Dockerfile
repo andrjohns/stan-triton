@@ -91,10 +91,4 @@ RUN echo " \
               -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl \
 " >> .R/Makevars
 
-RUN echo "CMDSTAN=\${HOME}/.cmdstan-triton/cmdstan-2.30.1" >> .Renviron
-CMD Rscript -e " \
-  if (!dir.exists(Sys.getenv('CMDSTAN'))) { \
-    file.copy(from = '/home/stan_triton/.cmdstan/cmdstan-2.30.1', \
-              to = Sys.getenv('CMDSTAN'), recursive = TRUE) \
-  } \
-"
+ENV CMDSTAN=/home/stan_triton/.cmdstan/cmdstan-2.30.1" >> .Renviron
