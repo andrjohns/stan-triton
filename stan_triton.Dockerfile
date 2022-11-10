@@ -15,7 +15,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key '95C0FAF38DB3CCAD0C0
 RUN apt-get update && apt-get install locales locales-all intel-mkl-full r-base-dev nvidia-opencl-icd \
                                       sudo libcurl4-openssl-dev libv8-dev git cmake \
                                       libxml2-dev clinfo nvidia-cuda-toolkit -y
-                                      
+
 # Specify that the MKL should provide the Matrix algebra libraries for the system
 RUN update-alternatives --install /usr/lib/x86_64-linux-gnu/libblas.so.3 \
                                   libblas.so.3-x86_64-linux-gnu \
@@ -33,7 +33,7 @@ ENV MKL_INTERFACE_LAYER GNU,LP64
 ENV MKL_THREADING_LAYER GNU
 ENV R_MAKEVARS_USER /home/stan_triton/.R/Makevars
 ENV R_ENVIRON_USER /home/stan_triton/.Renviron
-ENV CMDSTAN /home/stan_triton/.cmdstan/cmdstan-2.30.1
+ENV CMDSTAN /scratch/cs/bayes_ave/.cmdstan-triton/
 
 USER stan_triton
 WORKDIR /home/stan_triton
@@ -51,24 +51,6 @@ RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
   install.packages(c('remotes')); \
   remotes::install_github('stan-dev/cmdstanr', dependencies = TRUE) \
-"
-
-RUN Rscript -e " \
-  cmdstanr::install_cmdstan(cores = parallel::detectCores()); \
-  cmdstanr::cmdstan_make_local(cpp_options = list( \
-    'CXXFLAGS += -O3 -march=native -mtune=native -DEIGEN_USE_MKL_ALL -I/usr/include/mkl \
-                  -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \
-                  -DMKL_ILP64 -m64', \
-    'LDFLAGS += -L/usr/lib/x86_64-linux-gnu/intel64 -Wl,--no-as-needed \
-                -lmkl_intel_ilp64 -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl', \
-    'TBB_INC=/usr/include', \
-    'TBB_LIB=/usr/lib/x86_64-linux-gnu', \
-    'TBB_INTERFACE_NEW=true', \
-    'STAN_THREADS=true', \
-    'STANCFLAGS=\'--O1\'', \
-    'PRECOMPILED_HEADERS=false' \
-  )); \
-  cmdstanr::rebuild_cmdstan(cores = parallel::detectCores()) \
 "
 
 RUN Rscript -e " \
