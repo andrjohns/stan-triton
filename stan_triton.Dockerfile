@@ -44,7 +44,7 @@ WORKDIR /home/stan_triton
 RUN mkdir -p R/library
 
 RUN echo " \
-  R_LIBS_USER=/home/stan_triton/R/library:\${R_LIBS_USER} \n \
+  R_LIBS_USER=\${R_LIBS_USER}:/home/stan_triton/R/library \n \
 " >> .Renviron
 
 RUN Rscript -e " \
