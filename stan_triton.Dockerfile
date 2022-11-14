@@ -6,15 +6,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Add non-free repo to install Intel MKL
 RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list
 
-# RUN apt-get update && apt-get install gnupg -y
-
-# Add CRAN Debian repo and public key so we can install R4.2+
-# RUN echo "deb http://cloud.r-project.org/bin/linux/debian bullseye-cran40/" >> /etc/apt/sources.list
-# RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key '95C0FAF38DB3CCAD0C080A7BDC78B2DDEABC47B7'
-
-RUN apt-get update && apt-get install locales locales-all intel-mkl-full r-base-dev nvidia-opencl-icd \
+RUN apt-get update && apt-get install locales locales-all intel-mkl-full r-base-dev nvidia-tesla-510-opencl-icd \
                                       sudo libcurl4-openssl-dev libv8-dev git cmake \
-                                      libxml2-dev clinfo nvidia-cuda-toolkit -y
+                                      libxml2-dev clinfo nvidia-cuda-toolkit nvidia-cuda-toolkit-gcc -y
 
 # Specify that the MKL should provide the Matrix algebra libraries for the system
 RUN update-alternatives --install /usr/lib/x86_64-linux-gnu/libblas.so.3 \
