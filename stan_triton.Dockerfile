@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 # Defined only while building
 ARG DEBIAN_FRONTEND=noninteractive
