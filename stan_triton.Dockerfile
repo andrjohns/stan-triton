@@ -72,3 +72,5 @@ RUN echo " \
               -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl \
 " >> .R/Makevars
 
+# Make directory accessible and executable by all users
+RUN sudo chmod -R 777 /home/stan_triton
