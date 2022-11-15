@@ -32,6 +32,20 @@ ENV CMDSTAN /scratch/cs/bayes_ave/.cmdstan-triton/
 USER stan_triton
 WORKDIR /home/stan_triton
 
+RUN mkdir .R
+
+# Add flags to suppress annoying compiler warnings in build
+RUN echo " \
+  CXXFLAGS += -Wno-enum-compare -Wno-ignored-attributes -Wno-unused-local-typedef \
+              -Wno-unneeded-internal-declaration -Wno-unused-function -Wno-unused-but-set-variable \
+              -Wno-unused-variable -Wno-infinite-recursion -Wno-unknown-pragmas -Wno-unused-lambda-capture \
+              -Wno-deprecated-declarations -Wno-deprecated-builtins -Wno-unused-but-set-variables \n \
+  CXX14FLAGS += -Wno-enum-compare -Wno-ignored-attributes -Wno-unused-local-typedef \
+              -Wno-unneeded-internal-declaration -Wno-unused-function -Wno-unused-but-set-variable \
+              -Wno-unused-variable -Wno-infinite-recursion -Wno-unknown-pragmas -Wno-unused-lambda-capture \
+              -Wno-deprecated-declarations -Wno-deprecated-builtins -Wno-unused-but-set-variables \n \
+" >> .R/Makevars
+
 # Create local library for packages
 # Local library is prepended to the R_LIBS_USER env so that we can specify external
 # libraries when calling the image
@@ -43,13 +57,13 @@ RUN echo " \
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
-  install.packages(c('remotes')); \
+  install.packages(c('remotes','shiny')); \
   remotes::install_github('stan-dev/cmdstanr', dependencies = TRUE) \
 "
 
 RUN Rscript -e " \
   Sys.setenv(MAKEFLAGS=paste0('-j', parallel::detectCores())); \
-  install.packages(c('multiverse','remotes','rstan','projpred','brms','tidyverse')) \
+  install.packages(c('multiverse','rstan','projpred','brms','tidyverse')) \
 "
 
 RUN Rscript -e " \
@@ -62,15 +76,11 @@ RUN Rscript -e " \
 
 # Create R Makevars file with compiler optimisations and linker flags for
 # the Intel MKL and TBB libraries
-RUN mkdir .R
 RUN echo " \
-  CXXFLAGS += -O3 -march=native -mtune=native -DMKL_ILP64 -m64 -DEIGEN_USE_MKL_ALL -I/usr/include/mkl \
-              -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \n \
-  CXX14FLAGS += -O3 -march=native -mtune=native -DMKL_ILP64 -m64 -DEIGEN_USE_MKL_ALL -I/usr/include/mkl \
-              -Wno-enum-compare -Wno-deprecated-declarations -Wno-ignored-attributes \n \
+  CXXFLAGS += -O3 -march=native -mtune=native -DMKL_ILP64 -m64 -DEIGEN_USE_MKL_ALL -I/usr/include/mkl \n \
+  CXX14FLAGS += -O3 -march=native -mtune=native -DMKL_ILP64 -m64 -DEIGEN_USE_MKL_ALL -I/usr/include/mkl \n \
   LDFLAGS += -L/usr/lib/x86_64-linux-gnu/intel64 -Wl,--no-as-needed -lmkl_intel_ilp64 \
               -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl \
 " >> .R/Makevars
-
 # Make directory accessible and executable by all users
 RUN sudo chmod -R 777 /home/stan_triton
